@@ -1,0 +1,26 @@
+### Initial overview
+- Per-sensor readers (async or separate thread prefered):
+    - Possible support for multiple weather stations
+    - Possible support for only updating 1 sensor at a time
+- Process new data:
+    - Debug print data
+    - Automatic warnings after passing threasholds
+    - Store historical data
+    - Possible there will be multiple locations, which means the data collector and data processor should be kept separate
+- Store data as JSON (or a proper database)
+- Per sensor:
+    - Dedicated class per sensor
+    - Warning threasholds stored in the class
+    - Reader function (or channel?)
+    - Store class/similar in separate .hpp file
+    - Base class definition that all sensors import and base self off of
+    - Warnings and errors should be returned and always checked/read from
+- Sensor types: Temperature, Humidity, Wind speed, Pressure
+- Error handling everywhere
+- Create a UML Class Diagram
+- Things to log (to a file):
+    - Not sure if this is like the stored JSON data from earlier, or if it's different
+    - Collected sensor data (Timestamp, Sensor type, Sensor reading, Geographic location)
+- Ability to read historical data via: Date range, Sensor type, and Location
+- Dedicated functions for: Daily averages, Alerts for anomalies, and Comparing data across locations (if we use multiple locations)
+- 5 minute presentation (read project details)
