@@ -1,4 +1,12 @@
-### Initial overview
+# ISE-211 Project
+
+This repo contains the Arduino code (ISE-211_Project folder) which simply reads a DHT11 sensor, and sends the reading over serial to a computer.
+
+The code for the computer is a little more complicated. First, it will load a json config file. Next, it will load the json logger and print out the average over tha last 24 hours. Finally, the main loop will run, which will read the sensor, send alerts if needed, and save the reading to the logger. The serial reader connection will automatically connect and reconnect as needed.
+
+Additionally, the computer code will only work on a Windows computer. If you switch to using the fake serial reader class, and likely comment out a few lines, you could probably get something working. Linux support will be added only if it is deemed needed.
+
+## Initial overview
 - Per-sensor readers (async or separate thread prefered):
     - Possible support for multiple weather stations
     - Possible support for only updating 1 sensor at a time
