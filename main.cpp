@@ -12,6 +12,10 @@ int main() {
     ConfigReader cfg("config.json");
     cfg.loadConfigOrCreateDefaults();
 
+    // Create sensor objects
+    Sensor tempSensor("Temperature", cfg.config().alarmTempLow, cfg.config().alarmTempHigh);
+    Sensor humSensor("Humidity", cfg.config().alarmHumidityLow, cfg.config().alarmHumidityHigh);
+
     // Load sensor history
     SensorDataLogger logger("sensor_log.json");
     logger.loadHistory();
@@ -23,10 +27,6 @@ int main() {
     // Create ESP's serial reader
     SerialReader reader(cfg.config().port, cfg.config().baud);
     //FakeReader reader;
-
-    // Create sensor objects
-    Sensor tempSensor("Temperature", cfg.config().alarmTempLow, cfg.config().alarmTempHigh);
-    Sensor humSensor("Humidity", cfg.config().alarmHumidityLow, cfg.config().alarmHumidityHigh);
 
     while (true) {
         // Read the sensor data
