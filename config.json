@@ -4,5 +4,5 @@
   "alarmTempHigh": 35.0,
   "alarmTempLow": 0.0,
   "baud": 115200,
-  "port": "\\\\.\\COM5"
+  "port": "\\\\.\\COM6"
 }

@@ -20,8 +20,8 @@ int main() {
     printf("Yesterday's average: ");
 
     // Create ESP's serial reader
-    //SerialReader reader(cfg.config().port, cfg.config().baud);
-    FakeReader reader;
+    SerialReader reader(cfg.config().port, cfg.config().baud);
+    //FakeReader reader;
 
     while (true) {
         // Read the sensor data

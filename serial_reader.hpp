@@ -106,13 +106,13 @@ expected<pair<float, float>, string> SerialReader::read() {
         BOOL ok = ReadFile(handle_, buf, sizeof(buf), &got, nullptr);
 
         if (!ok) {
-            // USB-serial vanished
-            // Leave the handle invalid so the next read() attempt reconnects
+            // USB unplugged
+            // Leave handle invalid so the next read() attempt reconnects
             CloseHandle(handle_);
             handle_ = INVALID_HANDLE_VALUE;
             return unexpected("Port lost");
         }
-        if (got == 0) continue;   // No data yet, keep waiting
+        if (got == 0) continue;  // No data yet, keep waiting
 
         for (DWORD i = 0; i < got; ++i) {
             char c = buf[i];

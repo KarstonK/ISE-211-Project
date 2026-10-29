@@ -20,10 +20,10 @@ public:
     explicit JsonFileBase(string path) : path_(move(path)) {}
     virtual ~JsonFileBase() = default;
 
-    // Serialize current in-memory state to disk.
+    // Store memory to dist
     void save() const { writeJson(toJson()); }
 
-    // Load state from disk (throws if the file is missing / malformed).
+    // Load disk to memory
     void load() { fromJson(readJson()); }
 
     bool exists() const {
@@ -34,7 +34,6 @@ public:
     const string& path() const { return path_; }
 
 protected:
-    // Derived classes describe their state via these two hooks.
     virtual nlohmann::json toJson() const = 0;
     virtual void fromJson(const nlohmann::json& j) = 0;
 
@@ -47,8 +46,7 @@ protected:
             f >> j;
             return j;
         } catch (const nlohmann::json::parse_error& e) {
-            throw runtime_error("JsonFileBase: parse error in '" + path_ +
-                                     "': " + e.what());
+            throw runtime_error("JsonFileBase: parse error in '" + path_ + "': " + e.what());
         }
     }
 
@@ -56,7 +54,7 @@ protected:
         ofstream f(path_);
         if (!f.is_open())
             throw runtime_error("JsonFileBase: cannot open '" + path_ + "' for writing");
-        f << j.dump(2) << '\n';   // 2-space indent for human inspection
+        f << j.dump(2) << '\n';  // 2-space indent for human inspection
     }
 
 private:
@@ -66,7 +64,7 @@ private:
 class ConfigReader : public JsonFileBase {
 public:
     struct Config {
-        string port             = "\\\\.\\COM5";
+        string port             = "\\\\.\\COM6";
         int    baud             = 115200;
         float  alarmTempLow     =  0.0f;
         float  alarmTempHigh    = 35.0f;
@@ -76,8 +74,8 @@ public:
 
     explicit ConfigReader(string path) : JsonFileBase(move(path)) {}
 
-    // Call once at startup. If the file doesn't exist, we write
-    // defaults out so the user has something to edit next run.
+    // Load the config file
+    // Or create it with defaults if it doesn't exist
     void loadConfigOrCreateDefaults() {
         if (!exists()) { save(); return; }
         load();
@@ -128,23 +126,27 @@ public:
 
     explicit SensorDataLogger(string path) : JsonFileBase(move(path)) {}
 
-    // Load the historical log at startup (no-op if file doesn't exist yet).
-    void loadHistory() { if (exists()) load(); }
+    // Load the historical log at startup
+    // no-op if file doesn't exist yet
+    void loadHistory() {
+        if (exists()) {
+            load();
+        }
+    }
 
-    // Receive a new live reading (does not touch the file).
-    void addReading(float temperature, float humidity,
-                    TimePoint ts = chrono::system_clock::now()) {
+    // Receive a new live reading
+    void addReading(float temperature, float humidity, TimePoint ts = chrono::system_clock::now()) {
         readings_.push_back({ts, temperature, humidity});
     }
 
-    // Receive a new live reading and persist immediately.
-    void addReadingAndSave(float temperature, float humidity,
-                           TimePoint ts = chrono::system_clock::now()) {
+    // Add reading and immediately save to disk
+    void addReadingAndSave(float temperature, float humidity, TimePoint ts = chrono::system_clock::now()) {
         addReading(temperature, humidity, ts);
         save();
     }
 
-    // Average over [from, to). Returns nullopt if there's no data.
+    // Average over [from, to)
+    // Returns nullopt if there's no data.
     optional<Average> average(TimePoint from, TimePoint to) const {
         double sumT = 0.0, sumH = 0.0;
         size_t n = 0;
@@ -155,12 +157,13 @@ public:
                 ++n;
             }
         }
-        if (n == 0) return nullopt;
-        return Average{ static_cast<float>(sumT / n),
-                        static_cast<float>(sumH / n), n };
+        if (n == 0) {
+            return nullopt;
+        }
+        return Average{ static_cast<float>(sumT / n), static_cast<float>(sumH / n), n };
     }
 
-    // Convenience: average over the last `window` before `end`.
+    // Average over the last "window" before "end"
     optional<Average> averageLast(
         chrono::seconds window,
         TimePoint end = chrono::system_clock::now()) const {
@@ -197,8 +200,7 @@ protected:
 private:
     static string toIso8601(TimePoint tp) {
         const time_t t  = chrono::system_clock::to_time_t(tp);
-        const auto        ms = chrono::duration_cast<chrono::milliseconds>(
-                                   tp.time_since_epoch()).count() % 1000;
+        const auto ms = chrono::duration_cast<chrono::milliseconds>(tp.time_since_epoch()).count() % 1000;
         tm tm{};
 #ifdef _WIN32
         gmtime_s(&tm, &t);
