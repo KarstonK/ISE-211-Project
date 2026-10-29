@@ -1,5 +1,6 @@
 #include "serial_reader.hpp"
 #include "json_things.hpp"
+#include "sensors.hpp"
 
 #include <cstdio>
 #include <windows.h>
@@ -23,6 +24,10 @@ int main() {
     SerialReader reader(cfg.config().port, cfg.config().baud);
     //FakeReader reader;
 
+    // Create sensor testers
+    SensorTester tempSensor("Temperature", cfg.config().alarmTempLow, cfg.config().alarmTempHigh);
+    SensorTester humSensor("Humidity", cfg.config().alarmHumidityLow, cfg.config().alarmHumidityHigh);
+
     while (true) {
         // Read the sensor data
         auto result = reader.read();
@@ -38,19 +43,9 @@ int main() {
         printf("[DATA] Temperature: %.2f", temperature);
         printf(", Humidity: %.2f\n", humidity);
 
-        // Alert if temperature is out of range
-        if (temperature < cfg.config().alarmTempLow) {
-            printf("[ALERT] Temperature is below %g°C!\n", cfg.config().alarmTempLow);
-        } else if (temperature > cfg.config().alarmTempHigh) {
-            printf("[ALERT] Temperature is above %g°C!\n", cfg.config().alarmTempHigh);
-        }
-
-        // Alert if humidity is out of range
-        if (humidity < cfg.config().alarmHumidityLow) {
-            printf("[ALERT] Humidity is below %g%%!\n", cfg.config().alarmHumidityLow);
-        } else if (humidity > cfg.config().alarmHumidityHigh) {
-            printf("[ALERT] Humidity is above %g%%!\n", cfg.config().alarmHumidityHigh);
-        }
+        // Alert if any reading is out of range
+        tempSensor.test(temperature);
+        humSensor.test(humidity);
 
         // Log the reading
         logger.addReadingAndSave(temperature, humidity);
