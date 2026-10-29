@@ -1,12 +1,12 @@
 using namespace std;
 
-class SensorTester {
+class Sensor {
 private:
     string name;
     int low;
     int high;
 public:
-    SensorTester(string name, const int low, const int high) : name(name), low(low), high(high) {
+    Sensor(string name, const int low, const int high) : name(name), low(low), high(high) {
         if (low >= high) {
             throw invalid_argument("Low value must be less than high value");
         }

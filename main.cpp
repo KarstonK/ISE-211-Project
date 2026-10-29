@@ -24,9 +24,9 @@ int main() {
     SerialReader reader(cfg.config().port, cfg.config().baud);
     //FakeReader reader;
 
-    // Create sensor testers
-    SensorTester tempSensor("Temperature", cfg.config().alarmTempLow, cfg.config().alarmTempHigh);
-    SensorTester humSensor("Humidity", cfg.config().alarmHumidityLow, cfg.config().alarmHumidityHigh);
+    // Create sensor objects
+    Sensor tempSensor("Temperature", cfg.config().alarmTempLow, cfg.config().alarmTempHigh);
+    Sensor humSensor("Humidity", cfg.config().alarmHumidityLow, cfg.config().alarmHumidityHigh);
 
     while (true) {
         // Read the sensor data
