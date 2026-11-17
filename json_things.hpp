@@ -119,8 +119,8 @@ struct SensorReading {
 class SensorDataLogger : public JsonFileBase {
 public:
     struct Average {
-        float       temperature;
-        float       humidity;
+        float  temperature;
+        float  humidity;
         size_t sampleCount;
     };
 

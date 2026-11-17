@@ -21,8 +21,13 @@ int main() {
     logger.loadHistory();
 
     // Get yesterday's average
-    logger.averageLast(chrono::hours(24));
+    auto avg = logger.averageLast(chrono::hours(24));
     printf("Yesterday's average: ");
+    if (avg) {
+        printf("Temperature: %.2f, Humidity: %.2f\n", avg.value().temperature, avg.value().humidity);
+    } else {
+        printf("No data available\n");
+    }
 
     // Create ESP's serial reader
     SerialReader reader(cfg.config().port, cfg.config().baud);
